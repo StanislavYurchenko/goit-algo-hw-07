@@ -18,6 +18,9 @@ def input_error(func):
         except IndexError as e:
             return e.args[0] if e.args else message
 
+        except AttributeError as e:
+            return e.args[0] if e.args else message
+
     return inner
 
 
@@ -42,19 +45,15 @@ def add_contact(args, book: AddressBook):
 def change_contact(args: List[str], book: AddressBook) -> str:
     name, old_phone, new_phone = args
     record = book.find(name)
-    if record is None:
-        raise KeyError
-    else:
-        record.edit_phone(old_phone, new_phone)
-        return "Contact updated."
+    record.edit_phone(old_phone, new_phone)
+    return "Contact updated."
 
 
 @input_error
 def show_phones(args: List[str], book: AddressBook) -> Record | str:
-
     name = args[0]
     record = book.find(name)
-    return record if record else "Contact not found."
+    return f"Phones for {name}: {'; '.join(p.value for p in record.phones)}" if record else "Contact not found."
 
 
 @input_error
@@ -80,10 +79,7 @@ def show_birthday(args: List[str], book: AddressBook) -> str:
     name = args[0]
     record = book.find(name)
 
-    if record is None:
-        raise KeyError
-
-    if record.birthday is None:
+    if record.birthday is None: 
         return "Birthday not set for this contact."
 
     return f"{record.name.value}'s birthday is on {record.birthday.value.strftime('%d.%m.%Y')}."
