@@ -5,21 +5,38 @@ from record import Record
 
 def input_error(func):
     def inner(*args, **kwargs) -> str:
-        message = "Command is wrong or has wrong parameters."
         try:
             return func(*args, **kwargs)
 
+        except KeyError:
+            return "Contact not found."
+
+        except IndexError:
+
+            return "Missing or incorrect arguments. Please check the command syntax."
+
         except ValueError as e:
-            return e.args[0] if e.args else message
-            
-        except KeyError as e:
-            return e.args[0] if e.args else message
+            msg = str(e)
 
-        except IndexError as e:
-            return e.args[0] if e.args else message
+            if msg and (
+                "not enough values" in msg
+                or "too many values" in msg
+                or "list index" in msg
+                or "invalid literal" in msg
+            ):
+                return "Missing or incorrect arguments. Please check the command syntax."
 
-        except AttributeError as e:
-            return e.args[0] if e.args else message
+            if msg:
+                return msg
+
+            return "Invalid input or parameters. Please check your command."
+
+        except AttributeError:
+
+            return "Contact not found or command used incorrectly."
+
+        except TypeError:
+            return "Incorrect command usage. Please verify syntax."
 
     return inner
 
@@ -53,7 +70,7 @@ def change_contact(args: List[str], book: AddressBook) -> str:
 def show_phones(args: List[str], book: AddressBook) -> Record | str:
     name = args[0]
     record = book.find(name)
-    return f"Phones for {name}: {'; '.join(p.value for p in record.phones)}" if record else "Contact not found."
+    return f"{name}'s phones are: {'; '.join(p.value for p in record.phones)}" if record else "Contact not found."
 
 
 @input_error
@@ -79,10 +96,10 @@ def show_birthday(args: List[str], book: AddressBook) -> str:
     name = args[0]
     record = book.find(name)
 
-    if record.birthday is None: 
+    if record.birthday is None:
         return "Birthday not set for this contact."
 
-    return f"{record.name.value}'s birthday is on {record.birthday.value.strftime('%d.%m.%Y')}."
+    return f"{record.name.value}'s birthday is on {record.birthday.value}."
 
 
 @input_error

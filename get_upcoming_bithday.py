@@ -4,6 +4,10 @@ def date_to_string(date):
     return date.strftime("%d.%m.%Y")
 
 
+def string_to_date(date_string):
+    return date.strptime(date_string, "%d.%m.%Y")
+
+
 def find_next_weekday(start_date, weekday):
     days_ahead = weekday - start_date.weekday()
     if days_ahead <= 0:
@@ -20,7 +24,7 @@ def get_upcoming_birthdays(users, days=7)-> list[dict[str, str]]:
     today = date.today()
 
     for user in users:
-        birthday_this_year = user["birthday"].replace(year=today.year)
+        birthday_this_year = string_to_date(user["birthday"]).replace(year=today.year)
 
         if birthday_this_year < today:
             birthday_this_year = birthday_this_year.replace(year=today.year + 1)

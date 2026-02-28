@@ -10,7 +10,7 @@ class Record:
         self.birthday = None
 
     def __str__(self) -> str:
-        return f"Contact name: {self.name.value}, phones: {'; '.join(p.value for p in self.phones)}, birthday: {self.birthday.value.strftime('%d.%m.%Y') if self.birthday else 'N/A'}"
+        return f"Contact name: {self.name.value}, phones: {'; '.join(p.value for p in self.phones)}, birthday: {self.birthday.value if self.birthday else 'N/A'}"
 
     def add_phone(self, phone: str) -> None:
         self.phones.append(Phone(phone))
